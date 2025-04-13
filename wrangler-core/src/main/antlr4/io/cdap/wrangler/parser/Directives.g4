@@ -49,6 +49,9 @@ statements
  :  ( Comment | macro | directive ';' | pragma ';' | ifStatement)*
  ;
 
+
+
+/*
 directive
  : command
   (   codeblock
@@ -66,6 +69,28 @@ directive
     | properties
   )*?
   ;
+*/
+
+directive
+ : command
+  (   codeblock
+    | identifier
+    | macro
+    | text
+    | number
+    | bool
+    | column
+    | colList
+    | numberList
+    | boolList
+    | stringList
+    | numberRanges
+    | properties
+    | byteSizeValue    // Added this
+    | timeDurationValue // Added this
+  )*?
+  ;
+
 
 ifStatement
   : ifStat elseIfStat* elseStat? '}'
@@ -139,9 +164,18 @@ numberRange
  : Number ':' Number '=' value
  ;
 
+/*
 value
  : String | Number | Column | Bool
  ;
+*/
+
+//modify it to include the new token types
+
+value
+ : String | Number | Column | Bool | ByteSize | TimeDuration
+ ;
+
 
 ecommand
  : '!' Identifier
@@ -193,6 +227,17 @@ stringList
 
 identifierList
  : Identifier (',' Identifier)*
+ ;
+
+
+// Added these new parser rules here
+
+byteSizeValue
+ : ByteSize
+ ;
+
+timeDurationValue
+ : TimeDuration
  ;
 
 
@@ -310,4 +355,22 @@ fragment Int
 
 fragment Digit
  : [0-9]
+
+// Added the byte size and time duration lexer rules
+ByteSize
+ : Number [Kk]?[Bb] 
+ | Number [Mm][Bb] 
+ | Number [Gg][Bb] 
+ | Number [Tt][Bb] 
+ | Number [Pp][Bb] 
+ | Number [Bb]
+ ;
+
+TimeDuration
+ : Number [Mm][Ss] 
+ | Number [Ss] 
+ | Number [Mm] 
+ | Number [Hh] 
+ | Number [Dd]
+ ;
  ;
